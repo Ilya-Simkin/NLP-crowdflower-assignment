@@ -153,5 +153,92 @@ def getNgramsWords(data, n):
 ```
 ###part two : the feature extraction:
 
-####
+####the feature extraction will be splet to 3 parts the baisic featurs extraction that extract the normal featurs from the data:
+* some samples of features we get in this part are :
+ 1. query tokens in title
+ 2. percent query tokens in the title
+ 3. query tokens inthe description
+ 4. the query length
+ 5. the description and title length
+ 6. after that we use the n grams we made and check how many of them from the query where in the title and vice versa.
+ 7. and so on ...
+
+the code of the baisice feature extraction : 
+```{r baisicFextraction, message=FALSE, results='hide'}
+def extract_features_fromData(data):
+    pattern = re.compile(r"(?u)\b\w+\b")
+    featurs = np.zeros(shape=(data.shape[0], 9,))
+    for i in xrange(len(data)):
+        query = set(x.lower() for x in pattern.findall(data[i, 1]))
+        title = set(x.lower() for x in pattern.findall(data[i, 2]))
+        description = set(x.lower() for x in pattern.findall(data[i, 3]))
+        if len(title) > 0:
+            featurs[i, 0] = float(len(query.intersection(title))) / float(len(title))
+            featurs[i, 1] = float(len(query.intersection(title))) / float(len(query))
+        if len(description) > 0:
+            featurs[i, 2] = float(len(query.intersection(description))) / float(
+                len(description))
+            featurs[i, 3] = float(len(query.intersection(description))) / float(
+                len(query))
+        featurs[i, 4] = len(query)
+        featurs[i, 5] = len(title)
+        featurs[i, 6] = len(description)
+        twoGramsWordsQuery = set(getNgramsWords(data[i, 1], 2))
+        twoGramsWordsTitle = set(getNgramsWords(data[i, 2], 2))
+        twoGramsWordsDescription = set(getNgramsWords(data[i, 3], 2))
+        featurs[i, 7] = len(twoGramsWordsQuery.intersection(twoGramsWordsTitle))
+        featurs[i, 8] = len(twoGramsWordsQuery.intersection(twoGramsWordsDescription))
+    return featurs
+```
+* the complex features extrction in here we extract the more statistic features most of them need some extra work on all the data set to work here we extract featurs like relevance of ngrams and theyr mean and variance the similarity function itself in the feature extraction file and wont be presented here .
+* the function recive the train and test sets as for us it is each of the train and the test sets created by the kfold methods. and also once for the full train and test sets for the final feature extraction that we will use in the end.
+```
+def extract_Complex_Features(train, test):
+    ngramss = 2 # here we chose to use up to 2 grams sets because 3 was a little havey and gave little results improvment,
+    featursTrain = np.zeros(shape=(train.shape[0], 3 + 2 * ngramss * 4,))
+    featursTest = np.zeros(shape=(test.shape[0], 3 + 2 * ngramss * 4,))
+    for i in range(len(train)):
+        group = train[train[i, 1] == train[:, 1]]
+        q_mean = group[:, 4].mean()
+        featursTrain[i, 0] = q_mean
+        testGroup = np.where(test[:, 1] == train[i, 1])
+        q_median = np.median(group[:, 4])
+        featursTrain[i, 1] = q_median
+        avg_variance = group[:, 5].mean()
+        featursTrain[i, 2] = avg_variance
+        featursTest[testGroup[0], 0] = q_mean 
+        featursTest[testGroup[0], 1] = q_median
+        featursTest[testGroup[0], 2] = avg_variance
+        for n in range(2, 4): # once the feature extracted for the title and once for the article body against the title 
+            weights = relevancyTuples(group, train[i], n, ngramss)
+            for rating in weights:
+                for ngram in weights[rating]:
+                    if weights[rating][ngram][0] != 0:
+                        k = (rating - 1 ) % 4
+                        l = 4 * (ngram - 1 )
+                        t = (n - 2) * 8
+                        featursTrain[i, 3 + (k + l + t)] = float(weights[rating][ngram][1]) / float(
+                            weights[rating][ngram][0])
+                        # else:
+                        # print variable_name +" 0"
+                        # pass
+    for i in range(len(test)):
+        group = train[test[i, 1] == train[:, 1]]
+        for n in range(2, 4): # once the feature extracted for the title and once for the article body against the title 
+            weights = relevancyTuples(group, test[i], n, ngramss)
+            for rating in weights:
+                for ngram in weights[rating]:
+                    if weights[rating][ngram][0] != 0:
+                        k = (rating - 1 ) % 4
+                        l = 4 * (ngram - 1 )
+                        t = (n - 2) * 8
+                        featursTest[i, 3 + (k + l + t)] = float(weights[rating][ngram][1]) / float(
+                            weights[rating][ngram][0])
+                        # else:
+                        # # print variable_name +" 0"
+                        # pass
+    return featursTrain, featursTest
+```
+
+
 
