@@ -445,44 +445,44 @@ def trainTFIDF2(bow21features, bow2kfold, test):
     finalResults = pd.DataFrame({"id": idx, "prediction": predictions})
     return tfidf2CrossValidationTest, finalResults
 ```
-###the result we got :
+*###the result we got :
 * here we will show the result we got for each model in the ensemble.
-#### Random-Forest scores for the cross validation with the kappa scoring:
+*#### Random-Forest scores for the cross validation with the kappa scoring:
 * Score 1.0: 0.689092583464
 * Score 2.0: 0.692011866853
 * Score 3.0: 0.665615429867
 * Score 4.0: 0.669360563477
 * Score 5.0: 0.691135309854
 *   avg score: 0.681443150703
-#### SVC scores for the cross validation with the kappa scoring:
+*#### SVC scores for the cross validation with the kappa scoring:
 * Score 1.0: 0.615232838422
 * Score 2.0: 0.652477392466
 * Score 3.0: 0.626238852507
 * Score 4.0: 0.63733075116
 * Score 5.0: 0.645565311641
 *   avg score: 0.635369029239
-#### AdaBoost scores for the cross validation with the kappa scoring:
+*#### AdaBoost scores for the cross validation with the kappa scoring:
 * Score 1.0: 0.626216104038
 * Score 2.0: 0.654211302048
 * Score 3.0: 0.607809555926
 * Score 4.0: 0.627135632603
 * Score 5.0: 0.650012795511
 *     avg score: 0.633077078025
-#### bagging scores for the cross validation with the kappa scoring:
+*#### bagging scores for the cross validation with the kappa scoring:
 * Score 1.0: 0.66805012222
 * Score 2.0: 0.663849819545
 * Score 3.0: 0.646712377868
 * Score 4.0: 0.661095229304
 * Score 5.0: 0.65791068584
 *     avg score: 0.659523646955
-#### tfidf version 1 scores for the cross validation with the kappa scoring:
+*#### tfidf version 1 scores for the cross validation with the kappa scoring:
 * Score 1: 0.563525693254
 * Score 2: 0.613078419953
 * Score 3: 0.604000405901
 * Score 4: 0.598639157402
 * Score 5: 0.619201126874
 *     avg score: 0.599688960677
-#### tfidf version 2 scores for the cross validation with the kappa scoring:
+*#### tfidf version 2 scores for the cross validation with the kappa scoring:
 * Score 1: 0.52205933385
 * Score 2: 0.586515621572
 * Score 3: 0.594808158382
