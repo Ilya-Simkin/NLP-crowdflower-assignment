@@ -192,7 +192,7 @@ def extract_features_fromData(data):
 ```
 * the complex features extrction in here we extract the more statistic features most of them need some extra work on all the data set to work here we extract featurs like relevance of ngrams and theyr mean and variance the similarity function itself in the feature extraction file and wont be presented here .
 * the function recive the train and test sets as for us it is each of the train and the test sets created by the kfold methods. and also once for the full train and test sets for the final feature extraction that we will use in the end.
-```
+```{r complxFeaturs, message=FALSE, results='hide'}
 def extract_Complex_Features(train, test):
     ngramss = 2 # here we chose to use up to 2 grams sets because 3 was a little havey and gave little results improvment,
     featursTrain = np.zeros(shape=(train.shape[0], 3 + 2 * ngramss * 4,))
@@ -240,5 +240,98 @@ def extract_Complex_Features(train, test):
     return featursTrain, featursTest
 ```
 
+#### the last part of the feature extraction process is the bag of words creation for the tfIdf models we will use and explain in the last part .
+* we use 2 types of bags of words one with and one without stemming process made on the data.
+* in the second bag of words we create featurs from all the data including the articule body so by an advice from the compatition forums we tried to use the BeautifulSoup to parse html data to get that extra data for our bag of words 
 
+the first bag of words :
+
+```{r bagofWords1, message=FALSE, results='hide'}
+
+def extractBagOfWordsFeatures(train, test):
+    traindata = []
+    testdata = []
+    for i in xrange(len(train)):
+        temp = [[], [], []]
+        temp[0] = train[i, 1]
+        temp[1] = train[i, 2]
+        temp[2] = train[i, 3]
+        ppp = temp[0] + ' ' + temp[1]  # + ' '+temp[2]
+        traindata.append(ppp)
+    trainLabels = train[:, 4]
+    for i in xrange(len(test)):
+        temp = [[], [], []]
+        temp[0] = test[i, 1]
+        temp[1] = test[i, 2]
+        temp[2] = test[i, 3]
+        ppp = temp[0] + ' ' + temp[1]  # + ' '+temp[2]
+        testdata.append(ppp)
+    if len(test[0]) >= 5:
+        testLabels = test[:, 4]
+    else:
+        testLabels = []
+    return (traindata, trainLabels, testdata, testLabels)
+```
+
+the second more complex bag of words with stemmer and BeautifulSoup parsing:
+
+```{r bagofWords2, message=FALSE, results='hide'}
+
+def extractBagOfWordsWithStemming(train, test):
+    stemmer = PorterStemmer()
+    trainData = []
+    trainLabels = []
+    testdata = []
+    testLabels = []
+    for i in xrange(len(train)):
+        tempValueQuery = BeautifulSoup(train[i, 1]).get_text(" ")
+        tempValueTitle = BeautifulSoup(train[i, 2]).get_text(" ")
+        tempValueDescription = BeautifulSoup(train[i, 3]).get_text(" ")
+        s1 = re.sub("[^a-zA-Z0-9]", " ", tempValueQuery).split(" ")
+        s2 = re.sub("[^a-zA-Z0-9]", " ", tempValueTitle).split(" ")
+        s3 = re.sub("[^a-zA-Z0-9]", " ", tempValueDescription).split(" ")
+        tempValueQuery = []
+        tempValueTitle = []
+        tempValueDescription = []
+        for word in s1:
+            tempValueQuery.append(StemWord(word, stemmer))
+        for word in s2:
+            tempValueTitle.append(StemWord(word, stemmer))
+        for word in s3:
+            tempValueDescription.append(StemWord(word, stemmer))
+        ans = [[], [], []]
+        ans[0] = tempValueQuery
+        ans[1] = tempValueTitle
+        ans[2] = tempValueDescription
+        ppp = (" ").join(ans[0]) + ' ' + (" ").join(ans[1]) + ' ' + (" ").join(ans[2])
+        trainData.append(ppp)
+    trainLabels.append(train[:, 4])
+    for i in xrange(len(test)):
+        tempValueQuery = BeautifulSoup(test[i, 1]).get_text(" ")
+        tempValueTitle = BeautifulSoup(test[i, 2]).get_text(" ")
+        tempValueDescription = BeautifulSoup(test[i, 3]).get_text(" ")
+        s1 = re.sub("[^a-zA-Z0-9]", " ", tempValueQuery).split(" ")
+        s2 = re.sub("[^a-zA-Z0-9]", " ", tempValueTitle).split(" ")
+        s3 = re.sub("[^a-zA-Z0-9]", " ", tempValueDescription).split(" ")
+        tempValueQuery = []
+        tempValueTitle = []
+        tempValueDescription = []
+        for word in s1:
+            tempValueQuery.append(StemWord(word, stemmer))
+        for word in s2:
+            tempValueTitle.append(StemWord(word, stemmer))
+        for word in s3:
+            tempValueDescription.append(StemWord(word, stemmer))
+        ans = [[], [], []]
+        ans[0] = tempValueQuery
+        ans[1] = tempValueTitle
+        ans[2] = tempValueDescription
+        ppp = (" ").join(ans[0]) + ' ' + (" ").join(ans[1]) + ' ' + (" ").join(ans[2])
+        testdata.append(ppp)
+    if len(test[0]) >= 5:
+        testLabels.append(test[:, 4])
+    else:
+        testLabels = []
+    return (trainData, trainLabels, testdata, testLabels)
+```
 
