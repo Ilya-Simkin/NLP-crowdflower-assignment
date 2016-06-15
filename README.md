@@ -15,7 +15,11 @@ an assignment in a course to develop an NLP based search relevance estimation by
 ## lets start with an eye catcher :
 we got the aproximate 70th place in the competition which is very cool for 2 students that were working very fast on this project in the hardest part of our hardest semester in the degree.
 
-* here is the img of the leader board with our last submission 
+* here is the img of the leader board with our last submission  :
+ 
+Inline-style: 
+![alt text](https://github.com/Ilya-Simkin/NLP-crowdflower-assignment/submission-place69.JPG "score)
+
 
 *we will split the work we done into three main phases :
 *   the data input handaling 
@@ -446,50 +450,50 @@ def trainTFIDF2(bow21features, bow2kfold, test):
 ###the result we got :
 * here we will show the result we got for each model in the ensemble.
 #### Random-Forest scores for the cross validation with the kappa scoring:
-Score 1.0: 0.689092583464
-Score 2.0: 0.692011866853
-Score 3.0: 0.665615429867
-Score 4.0: 0.669360563477
-Score 5.0: 0.691135309854
-    avg score: 0.681443150703
+* Score 1.0: 0.689092583464
+* Score 2.0: 0.692011866853
+* Score 3.0: 0.665615429867
+* Score 4.0: 0.669360563477
+* Score 5.0: 0.691135309854
+*   avg score: 0.681443150703
 #### SVC scores for the cross validation with the kappa scoring:
-Score 1.0: 0.615232838422
-Score 2.0: 0.652477392466
-Score 3.0: 0.626238852507
-Score 4.0: 0.63733075116
-Score 5.0: 0.645565311641
-    avg score: 0.635369029239
+* Score 1.0: 0.615232838422
+* Score 2.0: 0.652477392466
+* Score 3.0: 0.626238852507
+* Score 4.0: 0.63733075116
+* Score 5.0: 0.645565311641
+*   avg score: 0.635369029239
 #### AdaBoost scores for the cross validation with the kappa scoring:
-Score 1.0: 0.626216104038
-Score 2.0: 0.654211302048
-Score 3.0: 0.607809555926
-Score 4.0: 0.627135632603
-Score 5.0: 0.650012795511
-    avg score: 0.633077078025
+* Score 1.0: 0.626216104038
+* Score 2.0: 0.654211302048
+* Score 3.0: 0.607809555926
+* Score 4.0: 0.627135632603
+* Score 5.0: 0.650012795511
+*     avg score: 0.633077078025
 #### bagging scores for the cross validation with the kappa scoring:
-Score 1.0: 0.66805012222
-Score 2.0: 0.663849819545
-Score 3.0: 0.646712377868
-Score 4.0: 0.661095229304
-Score 5.0: 0.65791068584
-    avg score: 0.659523646955
+* Score 1.0: 0.66805012222
+* Score 2.0: 0.663849819545
+* Score 3.0: 0.646712377868
+* Score 4.0: 0.661095229304
+* Score 5.0: 0.65791068584
+*     avg score: 0.659523646955
 #### tfidf version 1 scores for the cross validation with the kappa scoring:
-Score 1: 0.563525693254
-Score 2: 0.613078419953
-Score 3: 0.604000405901
-Score 4: 0.598639157402
-Score 5: 0.619201126874
-    avg score: 0.599688960677
+* Score 1: 0.563525693254
+* Score 2: 0.613078419953
+* Score 3: 0.604000405901
+* Score 4: 0.598639157402
+* Score 5: 0.619201126874
+*     avg score: 0.599688960677
 #### tfidf version 2 scores for the cross validation with the kappa scoring:
-Score 1: 0.52205933385
-Score 2: 0.586515621572
-Score 3: 0.594808158382
-Score 4: 0.587203792511
-Score 5: 0.549423448093
-avg score: 0.568002070882
+* Score 1: 0.52205933385
+* Score 2: 0.586515621572
+* Score 3: 0.594808158382
+* Score 4: 0.587203792511
+* Score 5: 0.549423448093
+*    avg score: 0.568002070882
 
-* the best weight we got for the model combinatation are :
-* (0.4, 0.15, 0.05, 0.2, 0.1, 0.1) coresponding with the order of models (Rf,svc,AdaBoost,bagging,tfidf1,tfidf2)
+#### the best weight we got for the model combinatation are :
+ (0.4, 0.15, 0.05, 0.2, 0.1, 0.1) coresponding with the order of models (Rf,svc,AdaBoost,bagging,tfidf1,tfidf2)
 
 ###last part  :  conclusons and farther work!
 *we think we can get even better scorring with some final tuning to all the settings of each of the ensemble moddels 
