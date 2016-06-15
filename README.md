@@ -16,8 +16,8 @@ an assignment in a course to develop an NLP based search relevance estimation by
 *   the data input handaling 
 *   the feature extraction 
 *   and the model creation phase 
-*   
-### data input handaling :
+
+## data input handaling :
 * first lets show how we handeleld the data input from the train and the test files :
   its is a simple csv read:
 ```{r load_data, message=FALSE, results='hide'}
