@@ -18,8 +18,10 @@ we got the aproximate 70th place in the competition which is very cool for 2 stu
 * here is the img of the leader board with our last submission  :
 ![Alt text](https://raw.githubusercontent.com/Ilya-Simkin/NLP-crowdflower-assignment/master/submission-place69.JPG "score")
 
+* thise is the link to our final submission file . unfortunately we didnt saved (for long) the mid submissions and the sub optimal     model tests due to the fact they were bad...
+ [our final submission to the website ](https://raw.githubusercontent.com/Ilya-Simkin/NLP-crowdflower-assignment/master/ensembled_submission.csv)
 
-*we will split the work we done into three main phases :
+* we will split the work we done into three main phases :
 *   the data input handaling 
 *   the feature extraction 
 *   and the model creation phase 
