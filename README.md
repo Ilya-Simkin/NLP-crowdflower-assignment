@@ -276,7 +276,6 @@ def extractBagOfWordsFeatures(train, test):
 the second more complex bag of words with stemmer and BeautifulSoup parsing:
 
 ```{r bagofWords2, message=FALSE, results='hide'}
-
 def extractBagOfWordsWithStemming(train, test):
     stemmer = PorterStemmer()
     trainData = []
@@ -333,5 +332,110 @@ def extractBagOfWordsWithStemming(train, test):
     else:
         testLabels = []
     return (trainData, trainLabels, testdata, testLabels)
+```
+
+### the model creation phase:
+
+finally the model we created :
+* we used 6 main models on the features we collected 
+1. random forest
+2. svm classifier
+3. adaboost classifier 
+4. bagging classifier 
+5. tfidf model 1
+6. tfidf model 2
+
+those models then getting tested on the kfold with cross validation process and an average score for each made .
+after that we calcuate the relative weight for each of the models by the results of the previuse testing and ensemble it all to one big model.
+
+* all the models are strongly relate on the scikit learn packeg 
+* and the tfidf models themself have a pipeline of few inside models as was sugessted by smarter pepole on the scikit forums for such tasks as ours.
+* each of the models has its own set of settings that we could play with for ages to create the best combination but we had to leave much of the values as deafault due to short time and sleepless nights.
+
+*each model get its score with a kappa function we found in the forums and modiffied :
+ (there is a similer one for the tfidf models presented in the files )
+```{r kappa, message=FALSE, results='hide'}
+def weightedKappa(trueLabel, predictedLabel):
+    rater_a = trueLabel
+    rater_b = predictedLabel
+    min_rating = None
+    max_rating = None
+    rater_a = np.array(rater_a, dtype=int)
+    rater_b = np.array(rater_b, dtype=int)
+    if not (len(rater_a) == len(rater_b)):
+        raise Exception("prediction and test set labels not of the same length")
+    if min_rating is None:
+        min_rating = min(min(rater_a), min(rater_b))
+    if max_rating is None:
+        max_rating = max(max(rater_a), max(rater_b))
+    assert (len(rater_a) == len(rater_b))
+    if min_rating is None:
+        min_rating = min(rater_a + rater_b)
+    if max_rating is None:
+        max_rating = max(rater_a + rater_b)
+    num_ratings = int(max_rating - min_rating + 1)
+    conf_mat = [[0 for i in range(num_ratings)]
+                for j in range(num_ratings)]
+    for a, b in zip(rater_a, rater_b):
+        conf_mat[a - min_rating][b - min_rating] += 1
+    num_ratings = len(conf_mat)
+    scoredItem = float(len(rater_a))
+    hist_rater_a = histogram(rater_a, min_rating, max_rating)
+    hist_rater_b = histogram(rater_b, min_rating, max_rating)
+    numerator = 0.0
+    denominator = 0.0
+    for i in range(num_ratings):
+        for j in range(num_ratings):
+            expected_count = (hist_rater_a[i] * hist_rater_b[j] / scoredItem)
+            d = pow(i - j, 2.0) / pow(num_ratings - 1, 2.0)
+            numerator += d * conf_mat[i][j] / scoredItem
+            denominator += d * expected_count / scoredItem
+    return (1.0 - numerator / denominator)
+```
+
+#### model examples :
+the bagging classifier function of model creation and testing :
+note that it recive a feature input which is actually a list of indicators for to which featurs in the vector to work on so we can decied to disable some of the featurs we created for some of the models (didnt used it  exapt removing the id field but may be worth playing with later on. )
+```{r bagging, message=FALSE, results='hide'}
+
+def Baggingclassifiers(train, test, KfoldDataSet, features=None):
+    if features is None:
+        features = range(KfoldDataSet[0][0])
+    model = BaggingClassifier(n_estimators=200, n_jobs=-1, random_state=1)  # random_state=1,
+    baggingCrossValidationTest = None
+    if toTestModel:
+        baggingCrossValidationTest = KappaOnCrossValidation(model, KfoldDataSet, features)
+    baggingFinalPredictions = ActivateModelAndformatOutput(model, train, test, features)
+    return baggingCrossValidationTest, baggingFinalPredictions
+```
+
+the tfidf version 2 : this one use a pipeline of few support vector algorithems in a row the flow was taken from the internet as exampled in scikit-learn website we found. it doing good and working on the stemmed bag of words we created.
+
+```{r tf2, message=FALSE, results='hide'}
+def trainTFIDF2(bow21features, bow2kfold, test):
+    idx = (test[0][:, 0]).astype(int)
+    tfv = TfidfVectorizer(min_df=5, max_df=500, max_features=None, strip_accents='ascii', analyzer='word',
+                          token_pattern=r'\w{1,}', ngram_range=(1, 2), use_idf=True, smooth_idf=True, sublinear_tf=True,
+                          stop_words='english')
+    pipeline = Pipeline(
+        [('svd', TruncatedSVD(n_components=200, algorithm='randomized', n_iter=5, random_state=None, tol=0.0)),
+         ('scl', StandardScaler(copy=True, with_mean=True, with_std=True)),
+         ('svm',
+          SVC(C=10.0, kernel='rbf', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001,
+              cache_size=200, class_weight=None, verbose=False, max_iter=-1, random_state=None))])
+    tfidf2CrossValidationTest = None
+    if toTestModel:
+        tfidf2CrossValidationTest = tfidfCrossValidation(tfv, pipeline, bow2kfold)
+    trainData, lblsTrain, testData, lblstest = bow21features
+    tfv.fit(trainData)
+    X_train = tfv.transform(trainData)
+    X_test = tfv.transform(testData)
+    if isinstance(lblsTrain, list):
+        lblsTrain = lblsTrain[0]
+    lblsTrain = (lblsTrain.astype(int))
+    pipeline.fit(X_train, lblsTrain)
+    predictions = pipeline.predict(X_test)
+    finalResults = pd.DataFrame({"id": idx, "prediction": predictions})
+    return tfidf2CrossValidationTest, finalResults
 ```
 
