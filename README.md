@@ -25,7 +25,7 @@ def loadData(trainPath, testPath):
     train = pd.read_csv(trainPath).fillna("")
     test = pd.read_csv(testPath).fillna("")
     return train, test
-    ```
+```
 
 this part create the K-fold of the data we chose to use 5 as a k but we tested with 10 as well just didnt got better result and that was faster so ...
 ```{r kfold, message=FALSE, results='hide'}
@@ -45,7 +45,7 @@ def create_KfoldSets(dataSet, n_folds=5):
             testData = dataSet.loc[testIndex].as_matrix()
             splitSet.append((trainData, testData))
     return splitSet
-    ```
+```
 
 *this is the "main", it is the driver of all the feature extraction that we explain in the moment and creation of files of features that are ready for the machine learning models we made :
 ```{r main, message=FALSE, results='hide'}
