@@ -103,7 +103,55 @@ def main(removeStopWordss=True):
     testset = newtestSet
     pickle.dump((trainset, trainlbl, testset, testlbl), open(path + 'fullDataSetFeatures.pkl', 'w'))
 ```
+#### but first some extra helpfull functions :
+* the stemmer function using the nltk package to stemm one word at the time:
+```{r stemmer, message=FALSE, results='hide'}
+def StemWord(word, stemmer=None):
+    if stemmer is None:
+        stemmer = PorterStemmer()
+    return stemmer.stem(word)
+```
+*the remove stop words function, it also use the nltk package to remove stop word; those are words that wont help us as data extraction because they are to often used in the english language.
+```{r stopwords, message=FALSE, results='hide'}
+def removeStopWords(data):
+    stop = stopwords.words('english')
+    for i, row in data.iterrows():
+        queryLine = row["query"].lower().split(" ")
+        titleLine = row["product_title"].lower().split(" ")
+        descriptionLine = row["product_description"].lower().split(" ")
+        queryLine = (" ").join([z for z in queryLine if z not in stop])
+        titleLine = (" ").join([z for z in titleLine if z not in stop])
+        descriptionLine = (" ").join([z for z in descriptionLine if z not in stop])
+        data.set_value(i, "query", queryLine)
+        data.set_value(i, "product_title", titleLine)
+        data.set_value(i, "product_description", descriptionLine)
+```
+* now we display the ngrams creation functions they create the ngrams that are all the combinations of n words (we use 1 and 2 ) in different parts as the query and as in the title and the artical in the data set :
+```{r ngrams, message=FALSE, results='hide'}
 
+def nGramSimilarity(s1, s2, n):
+    s1 = set(getNgramsWords(s1, n))
+    s2 = set(getNgramsWords(s2, n))
+    if len(s1.union(s2)) == 0:
+        return 0
+    else:
+        return float(len(s1.intersection(s2))) / float(len(s1.union(s2)))
+
+
+def getNgramsWords(data, n):
+    pattern = re.compile(r"(?u)\b\w+\b")
+    wordList = pattern.findall(data)
+    Ngrams = []
+    if n > len(wordList):
+        return []
+    for i, word in enumerate(wordList):
+        ngram = wordList[i:i + n]
+        if len(ngram) == n:
+            Ngrams.append(tuple(ngram))
+    return Ngrams
+
+```
 ###part two : the feature extraction:
 
+####
 
