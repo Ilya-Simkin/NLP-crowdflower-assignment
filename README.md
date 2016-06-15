@@ -16,9 +16,7 @@ an assignment in a course to develop an NLP based search relevance estimation by
 we got the aproximate 70th place in the competition which is very cool for 2 students that were working very fast on this project in the hardest part of our hardest semester in the degree.
 
 * here is the img of the leader board with our last submission  :
- 
-Inline-style: 
-![alt text](https://github.com/Ilya-Simkin/NLP-crowdflower-assignment/submission-place69.JPG "score)
+![alt tag](https://raw.githubusercontent.com/Ilya-Simkin/NLP-crowdflower-assignment/master/submission-place69.JPG "score)
 
 
 *we will split the work we done into three main phases :
